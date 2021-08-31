@@ -13,7 +13,7 @@ class AddStatusToTaxes extends Migration
      */
     public function up()
     {
-        Schema::table('taxes', function (Blueprint $table) {
+        Schema::table('taxs', function (Blueprint $table) {
             $table->integer('status')->after('tax_value');
         });
     }

@@ -218,25 +218,32 @@ class ProductController extends Controller
                 $productAttrArr['mrp']=(int)$mrpArr[$key];
                 $productAttrArr['price']=(int)$priceArr[$key];
                 $productAttrArr['qty']=(int)$qtyArr[$key];
+                
                 if($size_idArr[$key]==''){
+                   
                     $productAttrArr['size_id']=0;
                 }else{
+                 
                     $productAttrArr['size_id']=$size_idArr[$key];
                 }
+                
                 if($color_idArr[$key]==''){
                     $productAttrArr['color_id']=0;
                 }else{
                     $productAttrArr['color_id']=$color_idArr[$key];
+                    
                 }
-             
+                if($paidArr[$key]!=''){
+                    DB::table('products_attr')->where(['id'=>$paidArr[$key]])->update($productAttrArr);
+                }
+               
                 if($request->hasFile("attr_image.$key")){
                 
                     if($paidArr[$key]!=''){
-                        // echo '<pre>';
-                        // print_r($paidArr[$key]);
-                        // die();
+                       
                         $arrImage=DB::table('products_attr')->where(['id'=>$paidArr[$key]])->get();
-                    if( Storage::exists('/public/media/'.$arrImage[0]->attr_image)){
+                        
+                    if(Storage::exists('/public/media/'.$arrImage[0]->attr_image)){
                         Storage::delete('/public/media/'.$arrImage[0]->attr_image);
                     }
                 }
@@ -247,8 +254,9 @@ class ProductController extends Controller
                     $image_name=$rand.'.'.$ext;
                     $request->file("attr_image.$key")->storeAs('/public/media',$image_name);
                     $productAttrArr['attr_image']= $image_name;
-
+                 
                     if($paidArr[$key]!=''){
+                       
                         DB::table('products_attr')->where(['id'=>$paidArr[$key]])->update($productAttrArr);
                     }else{
                         DB::table('products_attr')->insert($productAttrArr);
@@ -296,7 +304,7 @@ class ProductController extends Controller
                     DB::table('product_images')->insert($productImagesArr);
                 }
             }
-
+            
             $request->session()->flash('message', $mgs);
 
             return redirect('admin/product');

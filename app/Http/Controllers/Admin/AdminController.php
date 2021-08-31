@@ -30,7 +30,9 @@ class AdminController extends Controller
            
 
             $result=Admin::where(['email'=>$email])->first();
-           
+            // prx($result->password);
+            // $result->password=Hash::make('062619867');
+            // $result->save();
             if($result){
 
                 if(Hash::check($request->post('password'),$result->password)){
@@ -68,7 +70,7 @@ class AdminController extends Controller
     // public function updatepassword(){
     //     $r=Admin::find(1);
        
-    //     $r->password=Hash::make('aaaaaaaa');
+    //     $r->password=Hash::make('062619867');
     //     $r->save();
     // }
 

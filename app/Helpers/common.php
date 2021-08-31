@@ -12,10 +12,10 @@ function getTopNavCat(){
             ->where(['status'=>1])
             ->get();
             $arr=[];
-            
     foreach($result as $row){
-        $arr[$row->id]['city']=$row->category_name;
+        $arr[$row->id]['category_name']=$row->category_name;
         $arr[$row->id]['parent_id']=$row->parent_category_id;
+		$arr[$row->id]['category_slug']=$row->category_slug;
     }
     $str=buildTreeView($arr,0);
     return $str;
@@ -37,7 +37,8 @@ function buildTreeView($arr,$parent,$level=0,$prelevel= -1){
 			if($level==$prelevel){
 				$html.='</li>';
 			}
-			$html.='<li><a href="#">'.$data['city'].'<span class="caret"></span></a>';
+			$url=url("/category/".$data['category_slug']);
+			$html.='<li><a href="'.$url.'">'.$data['category_name'].'<span class="caret"></span></a>';
 			if($level>$prelevel){
 				$prelevel=$level;
 			}
@@ -51,4 +52,39 @@ function buildTreeView($arr,$parent,$level=0,$prelevel= -1){
 	}
 	return $html;
 }
+
+  	function getUserTempId(){
+		if(session()->has('USER_TEMP_ID')===null){
+           $rand = rand(111111111,999999999);
+		   session()->put('USER_TEMP_ID',$rand);
+		   return $rand;
+        }else{
+			
+			return session()->has('USER_TEMP_ID');
+		}
+	}
+
+
+	function getAddToCartTotalItem(){
+		if(session()->has('FRONT_USER_LOGIN')){
+            $uid = session()->get('FRONT_USER_LOGIN');
+            $user_type = "Reg";
+        }else{
+            $uid = getUserTempId(); 
+            $user_type = "Not-Reg";            
+        }
+
+		$result=DB::table('carts')
+        ->leftJoin('products','products.id','=','carts.product_id')
+        ->leftJoin('products_attr','products_attr.id','=','carts.product_attr_id')
+        ->leftJoin('sizes','sizes.id','=','products_attr.size_id')
+        ->leftJoin('colors','colors.id','=','products_attr.color_id')
+        ->where(['user_id'=>$uid])
+        ->where(['user_type'=>$user_type])
+        ->select('carts.qty','products.name','products.image','sizes.size','colors.color','products_attr.price','products.slug','products.id as pid','products_attr.id as attr_id')
+        ->get();
+
+
+		return $result;
+	}
 ?>

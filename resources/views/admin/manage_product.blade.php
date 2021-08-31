@@ -322,7 +322,7 @@
                       </div>
                       <div class="col-md-3">
                          <label for="size_id" class="control-label mb-1"> Size</label>
-                         <select id="size_id" name="size_id[]" class="form-control">
+                         <select id="size_id" name="size_id[]" class="form-control" required>
                             <option value="">Select Size</option>
                             @foreach($sizes as $list)
                                @if($pAArr['size_id']==$list->id)
@@ -332,10 +332,12 @@
                               @endif
                             @endforeach
                          </select>
+                        
                       </div>
+                      
                       <div class="col-md-3">
                          <label for="color_id" class="control-label mb-1"> Color</label>
-                         <select id="color_id" name="color_id[]" class="form-control">
+                         <select id="color_id" name="color_id[]" class="form-control" required>
                             <option value="">Select Color</option>
                            @foreach($colors as $list)
                           

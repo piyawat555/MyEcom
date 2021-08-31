@@ -128,11 +128,11 @@
                           
                     
                         @foreach($home_categories_product[$list->id] as $productArr)
-                     
+                        
                         <li>
                           <figure>
-                            <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}"></a>
-                            <a class="aa-add-card-btn"href="{{url('product/'.$productArr->slug)}}"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
+                            <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}" width="250px"></a>
+                            <a class="aa-add-card-btn" href="javascript:void(0)" onclick="home_add_to_cart('{{$productArr->id}}','{{$home_product_attr[$productArr->id][0]->size}}','{{$home_product_attr[$productArr->id][0]->color}}')"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
                             <figcaption>
                               <h4 class="aa-product-title"><a href="#">{{$productArr->name}}</a></h4>
                               <span class="aa-product-price"> Rs {{$home_product_attr[$productArr->id][0]->price}}</span><span class="aa-product-price"><del>{{$home_product_attr[$productArr->id][0]->mrp}}</del></span>
@@ -194,17 +194,17 @@
                 <div class="tab-pane fade in active" id="featured">
                   <ul class="aa-product-catg aa-featured-slider">
                     <!-- start single product item -->
-                    {{-- {{dd($home_featured_product_attr)}} --}}
+                    
                    
                     @if (isset($home_featured_product[$list->id][0]))
                           
                    
                     @foreach($home_featured_product[$list->id] as $productArr)
-                 
+                   
                     <li>
                       <figure>
-                        <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}"></a>
-                        <a class="aa-add-card-btn"href="{{url('product/'.$productArr->slug)}}"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
+                        <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}" width="250px" high="100px"></a>
+                        <a class="aa-add-card-btn" href="javascript:void(0)" onclick="home_add_to_cart('{{$productArr->id}}','{{$home_featured_product_attr[$productArr->id][0]->size}}','{{$home_featured_product_attr[$productArr->id][0]->color}}')"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
                         <figcaption>
                           <h4 class="aa-product-title"><a href="#">{{$productArr->name}}</a></h4>
                           <span class="aa-product-price"> Rs {{$home_featured_product_attr[$productArr->id][0]->price}}</span><span class="aa-product-price"><del>{{$home_featured_product_attr[$productArr->id][0]->mrp}}</del></span>
@@ -246,7 +246,7 @@
                  
                     <li>
                       <figure>
-                        <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}"></a>
+                        <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}" ></a>
                         <a class="aa-add-card-btn"href="{{url('product/'.$productArr->slug)}}"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
                         <figcaption>
                           <h4 class="aa-product-title"><a href="#">{{$productArr->name}}</a></h4>
@@ -364,5 +364,14 @@
     </div>
   </section>
   <!-- / Client Brand -->
-
+  <input type="hidden" id="qty" name="qty" value="1">
+  <form id="FrmAddToCart">
+  @csrf
+<input type="hidden"  id="size_id" name="size_id"/>
+<input type="hidden"  id="color_id" name="color_id"/>
+<input type="hidden"  id="pqty" name="pqty"/>
+<input type="hidden"  id="product_id" name="product_id"/>
+</form>
 @endsection
+
+

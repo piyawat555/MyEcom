@@ -26,6 +26,10 @@ use App\Http\Controllers\Front\FrontController;
 
 Route::get('/',[FrontController::class,'index']);
 Route::get('product/{id}',[FrontController::class,'product']);
+Route::get('category/{id}',[FrontController::class,'category']);
+Route::post('add_to_cart',[FrontController::class,'add_to_cart']);
+Route::get('/cart',[FrontController::class,'cart']);
+
 Route::get('/admin',[AdminController::class,'index']);
 Route::post('admin/auth',[AdminController::class,'auth'])->name('admin.auth');
 
