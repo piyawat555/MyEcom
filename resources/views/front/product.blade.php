@@ -57,8 +57,8 @@
                 <div class="aa-product-view-content">
                   <h3>{{$product[0]->name}}</h3>
                   <div class="aa-price-block">
-                    <span class="aa-product-view-price"><del>Rs : {{$product_attr[$product[0]->id][0]->mrp}} </del>&nbsp;</span>
-                    <span class="aa-product-view-price"> Rs : {{$product_attr[$product[0]->id][0]->price}} </span>
+                    <span class="aa-product-view-price" id="mrp_product"><del>Rs : {{$product_attr[$product[0]->id][0]->mrp}} </del>&nbsp;</span>
+                    <span class="aa-product-view-price" id="price_product"> Rs : {{$product_attr[$product[0]->id][0]->price}} </span>
                     <p class="aa-product-avilability">Avilability: <span>In stock</span> </p>
                     @if ($product[0]->lead_time!='')
                     <p class="lead_time">{{$product[0]->lead_time}}</p>
@@ -95,7 +95,7 @@
                   
                     @if ($attr->color!='')
                     
-                    <a href="javascript:void(0)" class="aa-color-{{strtolower($attr->color)}} product_color size_{{$attr->size}}" onclick=change_product_color_image("{{asset('storage/media/'.$attr->attr_image)}}","{{$attr->color}}")></a>
+                    <a href="javascript:void(0)" class="aa-color-{{strtolower($attr->color)}} product_color size_{{$attr->size}}" onclick=change_product_color_image("{{asset('storage/media/'.$attr->attr_image)}}","{{$attr->color}}","{{$attr->price}}","{{$attr->mrp}}")></a>
                     @endif
                     @endforeach               
                   </div>

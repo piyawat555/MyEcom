@@ -12,13 +12,15 @@
                   <div class="aa-product-catg-head-left">
                      <form action="" class="aa-sort-form">
                         <label for="">Sort by</label>
-                        <select name="">
-                           <option value="1" selected="Default">Default</option>
-                           <option value="2">Name</option>
-                           <option value="3">Price</option>
-                           <option value="4">Date</option>
+                        <select name="" onchange="sort_by()" id="sort_by_value">
+                           <option value="" selected="Default">Default</option>
+                           <option value="name">Name</option>
+                           <option value="price_desc">Price - Desc</option>
+                           <option value="price_asc">Price - Asc</option>
+                           <option value="date">Date</option>
                         </select>
                      </form>
+                     {{$sort_txt}}
                   </div>
                   <div class="aa-product-catg-head-right">
                      <a id="grid-catg" href="#"><span class="fa fa-th"></span></a>
@@ -27,33 +29,30 @@
                </div>
                <div class="aa-product-catg-body">
                   <ul class="aa-product-catg">
-                     <!-- start single product item -->    
-                         @if(count($categories)>0)
-        
-                        
-                           @foreach($categories as $attr)
-                       
-                         @if(isset($product_attr[$attr->id][0]))
+                     <!-- start single product item -->
+                     
+                     @if(isset($product[0]))
+                       @foreach($product as $productArr)
                       
                         <li>
                           <figure>
-                            <a class="aa-product-img" href="{{url('product/'.$attr->category_slug)}}"><img src="{{asset('storage/media/'.$attr->image)}}" alt="{{$attr->name}}"></a>
-                            <a class="aa-add-card-btn" href="javascript:void(0)" onclick="home_add_to_cart('{{$attr->id}}','{{$product_attr[$attr->id][0]->size}}','{{$product_attr[$attr->id][0]->color}}')"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
+                            <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img src="{{asset('storage/media/'.$productArr->image)}}" alt="{{$productArr->name}}"></a>
+                            <a class="aa-add-card-btn" href="javascript:void(0)" onclick="home_add_to_cart('{{$productArr->id}}','{{$product_attr[$productArr->id][0]->size}}','{{$product_attr[$productArr->id][0]->color}}')"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
                             <figcaption>
-                              <h4 class="aa-product-title"><a href="{{url('product/'.$attr->category_slug)}}">{{$attr->name}}</a></h4>
-                              <span class="aa-product-price">Rs {{$product_attr[$attr->id][0]->price}}</span><span class="aa-product-price"><del>Rs {{$product_attr[$attr->id][0]->mrp}}</del></span>
+                              <h4 class="aa-product-title"><a href="{{url('product/'.$productArr->slug)}}">{{$productArr->name}}</a></h4>
+                              <span class="aa-product-price">Rs {{$product_attr[$productArr->id][0]->price}}</span><span class="aa-product-price"><del>Rs {{$product_attr[$productArr->id][0]->mrp}}</del></span>
                             </figcaption>
                           </figure>                          
                         </li>  
-                        @endif
-                        @endforeach   
-                     @else
+                        @endforeach    
+                        @else
                         <li>
                           <figure>
                             No data found
                           <figure>
                         <li>
-                  @endif 
+                        @endif
+                     
                   </ul>
                   <!-- quick view modal -->                  
                </div>
@@ -81,7 +80,7 @@
                         </div>
                         <span id="skip-value-lower" class="example-val">30.00</span>
                         <span id="skip-value-upper" class="example-val">100.00</span>
-                        <button class="aa-filter-btn" type="submit">Filter</button>
+                        <button class="aa-filter-btn" type="button" onclick="sort_price_filter()">Filter</button>
                      </form>
                   </div>
                </div>
@@ -89,18 +88,16 @@
                <div class="aa-sidebar-widget">
                   <h3>Shop By Color</h3>
                   <div class="aa-color-tag">
-                     <a class="aa-color-green" href="#"></a>
-                     <a class="aa-color-yellow" href="#"></a>
-                     <a class="aa-color-pink" href="#"></a>
-                     <a class="aa-color-purple" href="#"></a>
-                     <a class="aa-color-blue" href="#"></a>
-                     <a class="aa-color-orange" href="#"></a>
-                     <a class="aa-color-gray" href="#"></a>
-                     <a class="aa-color-black" href="#"></a>
-                     <a class="aa-color-white" href="#"></a>
-                     <a class="aa-color-cyan" href="#"></a>
-                     <a class="aa-color-olive" href="#"></a>
-                     <a class="aa-color-orchid" href="#"></a>
+                    
+                     @foreach($color as $colors)
+       
+                     @if(in_array($colors->id,$colorfilterArr))
+                     <a class="aa-color-{{strtolower($colors->color)}} active_color" href="javascript:void(0)" onclick="setColor('{{$colors->id}}','1')"></a>
+                     @else
+                     <a class="aa-color-{{strtolower($colors->color)}}" href="javascript:void(0)" onclick="setColor('{{$colors->id}}','0')"></a>
+                     @endif
+                     @endforeach
+                  
                   </div>
                </div>
             </aside>
@@ -110,12 +107,19 @@
 </section>
 <!-- / product category -->
 
-<input type="hidden" id="qty" name="qty" value="1">
-  <form id="FrmAddToCart">
-  @csrf
-<input type="hidden"  id="size_id" name="size_id"/>
-<input type="hidden"  id="color_id" name="color_id"/>
-<input type="hidden"  id="pqty" name="pqty"/>
-<input type="hidden"  id="product_id" name="product_id"/>
-</form>
+<input type="hidden" id="qty" value="1"/>
+  <form id="frmAddToCart">
+    <input type="hidden" id="size_id" name="size_id"/>
+    <input type="hidden" id="color_id" name="color_id"/>
+    <input type="hidden" id="pqty" name="pqty"/>
+    <input type="hidden" id="product_id" name="product_id"/>           
+    @csrf
+  </form>  
+
+  <form id="categoryFilter">
+    <input type="hidden" id="sort" name="sort" value="{{$sort}}"/>
+    <input type="hidden" id="filter_price_start" name="filter_price_start" value="{{$filter_price_start}}"/>
+    <input type="hidden" id="filter_price_end" name="filter_price_end" value="{{$filter_price_end}}"/>
+    <input type="hidden" id="color_filter" name="color_filter" value="{{$color_filter}}"/>
+   </form> 
 @endsection

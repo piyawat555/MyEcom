@@ -4200,3 +4200,19 @@ img {
 .mt10{
   margin-top: 10px;
 }
+.aa-color-black {
+  background-color: #0f0103;
+}
+.aa-color-green {
+  background-color: #34a309;
+}
+.aa-color-orange {
+  background-color: #fa4e09;
+}
+.aa-color-gray {
+  background-color: #54585a;
+}
+
+.active_color{
+  border: 3px solid green;
+}

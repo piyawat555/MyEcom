@@ -117,25 +117,86 @@ class FrontController extends Controller
         return view('front.index',$result);
     }
 
-    public function category(Request $request,$slug){
-
- 
-        $result['categories']=DB::table('categories')
-        ->leftjoin('products','products.category_id','=','categories.id')
-        ->where(['products.status'=>1])
-        ->where(['categories.category_slug'=>$slug])
-        ->get();
+    public function category(Request $request,$slug)
+    {   
+        $sort="";
+        $sort_txt="";
+        $filter_price_start="";
+        $filter_price_end="";
+        $color_filter="";
+        $colorfilterArr=[];
+        if($request->get('sort')!==null){
+            $sort=$request->get('sort');
+        }    
         
-    foreach($result['categories'] as $list1){
-      
-        $result['product_attr'][$list1->id]=
-            DB::table('products_attr')
-            ->leftJoin('sizes','sizes.id','=','products_attr.size_id')
-            ->leftJoin('colors','colors.id','=','products_attr.color_id')
-            ->where(['products_attr.products_id'=>$list1->id])
-            ->get();
-    }
-   
+        $query=DB::table('products');
+        $query=$query->leftJoin('categories','categories.id','=','products.category_id');
+        $query=$query->leftJoin('products_attr','products.id','=','products_attr.products_id');
+        $query=$query->where(['products.status'=>1]);
+        $query=$query->where(['categories.category_slug'=>$slug]);
+        if($sort=='name'){
+            $query=$query->orderBy('products.name','asc');
+            $sort_txt="Product Name";
+        }
+        if($sort=='date'){
+            $query=$query->orderBy('products.id','desc');
+            $sort_txt="Date";
+        }
+        if($sort=='price_desc'){
+            $query=$query->orderBy('products_attr.price','desc');
+            $sort_txt="Price - DESC";
+        }if($sort=='price_asc'){
+            $query=$query->orderBy('products_attr.price','asc');
+            $sort_txt="Price - ASC";
+        }
+       
+        if($request->get('filter_price_start')!==null && $request->get('filter_price_end')!==null){
+           
+            $filter_price_start=$request->get('filter_price_start');
+            $filter_price_end=$request->get('filter_price_end');
+            if($filter_price_start>0 && $filter_price_end>0){
+                
+                $query=$query->whereBetween('products_attr.price',array($filter_price_start,$filter_price_end));
+                
+            }
+        }
+       
+        if($request->get('color_filter')!==null){
+            $color_filter=$request->get('color_filter');
+            $colorfilterArr = explode(":",$color_filter);
+            $colorfilterArr = array_filter($colorfilterArr);
+            $query=$query->where(['products_attr.color_id'=>$request->get('color_filter')]);    
+        }
+
+        $query=$query->distinct()->select('products.*');
+        $query=$query->get();
+        
+        $result['product']=$query;
+       
+        foreach($result['product'] as $list1){
+           
+            $query1=DB::table('products_attr');
+            $query1=$query1->leftJoin('sizes','sizes.id','=','products_attr.size_id');
+            $query1=$query1->leftJoin('colors','colors.id','=','products_attr.color_id');
+            $query1=$query1->where(['products_attr.products_id'=>$list1->id]);
+            
+            $query1=$query1->get();
+           
+            $result['product_attr'][$list1->id]=$query1;    
+
+        }
+
+        $result['color']=DB::table('colors')
+                ->where(['status'=>1])
+                ->get();
+ 
+
+        $result['sort']=$sort;
+        $result['sort_txt']=$sort_txt;
+        $result['filter_price_start']=$filter_price_start;
+        $result['filter_price_end']=$filter_price_end;
+        $result['color_filter']=$color_filter;
+        $result['colorfilterArr']=$colorfilterArr;
         return view('front.category',$result);
     }
 
@@ -284,7 +345,7 @@ class FrontController extends Controller
         ->leftJoin('colors','colors.id','=','products_attr.color_id')
         ->where(['user_id'=>$uid])
         ->where(['user_type'=>$user_type])
-        ->select('carts.qty','products.name','products.image','sizes.size','colors.color','products_attr.price','products.slug','products.id as pid','products_attr.id as attr_id')
+        ->select('carts.qty','products.name','products.image','sizes.size','colors.color','products_attr.price','products_attr.attr_image','products.slug','products.id as pid','products_attr.id as attr_id')
         ->get();
 
         

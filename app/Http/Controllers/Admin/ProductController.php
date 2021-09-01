@@ -311,9 +311,37 @@ class ProductController extends Controller
     }
    
     public function delete(Request $request,$id){
-        $model = Product::find($id);
+        $result['product']=DB::table('products')
+        ->leftJoin('product_images','product_images.products_id','=','products.id')
+        ->leftJoin('products_attr','products_attr.products_id','=','products.id')
+        ->where(['product_images.products_id'=>$id])
+        ->where(['products_attr.products_id'=>$id])
         
-        $model->delete();
+        ->get();
+   
+        foreach($result['product'] as $test1){
+            if(isset($test1->images)){
+                if( Storage::exists('/public/media/'.$test1->images)){
+                    Storage::delete('/public/media/'.$test1->images);
+                }
+                DB::table('product_images')->where(['products_id'=>$test1->products_id])->delete();
+            }if(isset($test1->attr_image)){
+                if( Storage::exists('/public/media/'.$test1->attr_image)){
+                    Storage::delete('/public/media/'.$test1->attr_image);
+                    
+                }
+                DB::table('products_attr')->where(['products_id'=>$test1->products_id])->delete();
+            }
+            if(isset($test1->image)){
+                if( Storage::exists('/public/media/'.$test1->image)){
+                    Storage::delete('/public/media/'.$test1->image);
+                    
+                }
+               
+            }
+        }
+           
+        DB::table('products')->where(['id'=>$id])->delete();
         $request->session()->flash('messagedelete','ลบรายการเรียบร้อยแล้ว');
         return redirect('admin/product');
      }

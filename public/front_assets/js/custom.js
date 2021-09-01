@@ -240,23 +240,29 @@ jQuery(function($){
     jQuery(function(){
       if($('body').is('.productPage')){
        var skipSlider = document.getElementById('skipstep');
+       var filter_price_start=jQuery('#filter_price_start').val();
+       var filter_price_end=jQuery('#filter_price_end').val();
+       if(filter_price_start==''||filter_price_end==''){
+        var filter_price_start=100;
+        var filter_price_end=1700;
+       }
         noUiSlider.create(skipSlider, {
             range: {
                 'min': 0,
-                '10%': 10,
-                '20%': 20,
-                '30%': 30,
-                '40%': 40,
-                '50%': 50,
-                '60%': 60,
-                '70%': 70,
-                '80%': 80,
-                '90%': 90,
-                'max': 100
+                '10%': 100,
+                '20%': 300,
+                '30%': 500,
+                '40%': 700,
+                '50%': 900,
+                '60%': 1100,
+                '70%': 1300,
+                '80%': 1500,
+                '90%': 1700,
+                'max': 1900
             },
             snap: true,
             connect: true,
-            start: [20, 70]
+            start: [filter_price_start,filter_price_end]
         });
         // for value print
         var skipValues = [
@@ -358,11 +364,14 @@ jQuery(function($){
 });
 
 
-function change_product_color_image(img,color){
-  
+function change_product_color_image(img,color,price,mrp){
+    
   jQuery('#color_id').val(color);
  
     jQuery('.simpleLens-big-image-container').html('<a data-lens-image="'+img+'" class="simpleLens-lens-image"><img src="'+img+'" class="simpleLens-big-image"></a>');
+    jQuery('#mrp_product').html('<span class="aa-product-view-price" id="mrp_product"><del>Rs : '+mrp+' </del>&nbsp;</span>');
+    jQuery('#price_product').html('<span class="aa-product-view-price" id="price_product"> Rs : '+price+' </span>');
+    
 }
 
 
@@ -414,8 +423,11 @@ function add_to_cart(id,size_str_id,color_str_id){
         }else{
           jQuery('.aa-cart-notify').html(result.totalItem);
           var html ='<ul>';
+          
           jQuery.each(result.data,function(arrykey,arryval){
+           
             totalprice=parseInt(totalprice)+(parseInt(arryval.qty)*parseInt(arryval.price));
+           
             html+='<li><a class="aa-cartbox-img" href="#"><img src="'+PRODUCT_IMAGE+'/'+arryval.image+'" alt="img"></a><div class="aa-cartbox-info"><h4><a href="#">'+arryval.name+'</a></h4><p>'+arryval.qty+' * Rs : '+arryval.price+'</p></div></li>';
           });
          
@@ -455,4 +467,30 @@ function updateQty(pid,size,color,attr_id,price){
   jQuery('#total_price_'+attr_id).html('RS '+qty*price);
 
 
+}
+
+function sort_by(){
+  var sort_by_value = jQuery('#sort_by_value').val();
+  jQuery('#sort').val(sort_by_value);
+  jQuery('#categoryFilter').submit();
+}
+
+function sort_price_filter(){
+  jQuery('#filter_price_start').val(jQuery('#skip-value-lower').html());
+  jQuery('#filter_price_end').val(jQuery('#skip-value-upper').html());
+  jQuery('#categoryFilter').submit();
+}
+
+function setColor(color,type){
+var color_str=jQuery('#color_filter').val();
+
+
+if(type==1){
+var new_color_str=color_str.replace(color+':','');
+jQuery('#color_filter').val(new_color_str);
+}else{
+  jQuery('#color_filter').val(color+':'+color_str);
+  jQuery('#categoryFilter').submit();
+}
+jQuery('#categoryFilter').submit();
 }
